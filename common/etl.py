@@ -41,7 +41,7 @@ def create_schema_if_not_exists(spark: SparkSession, schema_name: str) -> None:
 
     Args:
         spark: SparkSession to use.
-        schema_name: Schema to create (if it does not exist). Use fully qualified name (e.g. "my_catalog.my_schema").
+        schema_name: Schema to create (if it does not exist). Use fully qualified name (e.g. "my_schema").
 
     Returns:
         None
@@ -51,8 +51,7 @@ def create_schema_if_not_exists(spark: SparkSession, schema_name: str) -> None:
 
 def get_integration_configs(spark: SparkSession, source_system: str) -> DataFrame:
     """
-    Reads the configs from `{CONFIG_TABLE_CATALOG}.{INTEGRATION_CONFIG_TABLE_SCHEMA}.{source_system}` and `{CONFIG_TABLE_CATALOG}.{WATERMARK_CONFIG_TABLE_SCHEMA}.{source_system}`
-    and creates a list of primary key(s)
+    Reads the configs from `integration_configs.{source_system}`
 
     Args:
         source_system: Source system name (e.g. "yahoofina")
@@ -67,9 +66,6 @@ def get_integration_configs(spark: SparkSession, source_system: str) -> DataFram
         """
     )
     return df
-
-
-
 
 
 
