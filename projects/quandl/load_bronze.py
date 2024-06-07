@@ -1,3 +1,4 @@
+# Databricks notebook source
 import quandl as qu
 import pandas as pd
 from pyspark.sql.functions import col
