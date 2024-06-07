@@ -3,6 +3,7 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql import SparkSession
 
+
 def clean_column_names(df) -> DataFrame :
     """
     Removes or replaces invalid characters from column names of a Spark DataFrame and converts them to lowercase.
@@ -33,6 +34,7 @@ def add_necessary_fields(df) -> DataFrame:
     
     return df
 
+
 def create_schema_if_not_exists(spark: SparkSession, schema_name: str) -> None:
     """
     Create a schema if it does not exist.
@@ -45,3 +47,29 @@ def create_schema_if_not_exists(spark: SparkSession, schema_name: str) -> None:
         None
     """
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+
+
+def get_integration_configs(spark: SparkSession, source_system: str) -> DataFrame:
+    """
+    Reads the configs from `{CONFIG_TABLE_CATALOG}.{INTEGRATION_CONFIG_TABLE_SCHEMA}.{source_system}` and `{CONFIG_TABLE_CATALOG}.{WATERMARK_CONFIG_TABLE_SCHEMA}.{source_system}`
+    and creates a list of primary key(s)
+
+    Args:
+        source_system: Source system name (e.g. "yahoofina")
+
+    Returns:
+        DataFrame containing the configs for the source system
+    """
+    df = spark.sql(
+        f"""
+        select *
+        from integration_configs.{source_system}
+        """
+    )
+    return df
+
+
+
+
+
+

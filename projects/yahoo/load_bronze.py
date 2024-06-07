@@ -9,30 +9,31 @@ from pyspark.sql import SparkSession
 # Initialize Spark session
 spark = SparkSession.builder.appName("StockDataPipeline").getOrCreate()
 
+
+# COMMAND ----------
+
+configs = etl.get_integration_configs(spark, "yahoofina")
+
 # Function to fetch data from Yahoo Finance
 def fetch_yahoo_data(ticker):
     stock = yf.Ticker(ticker)
     hist = stock.history(period="max")
     return hist
 
-# Example tickers and datasets
-yahoo_tickers = ["AAPL", "MSFT", "GOOGL"]
+for row in configs.collect():
+        source_table = row["source_table"]
+        target_table = row["target_table"]
+        target_schema = row["target_schema"]
+        partition_key = row["partition_key"]
+        primary_key_list = row["primary_key_list"]
 
+        # Fetch data
+        yahoo_data = fetch_yahoo_data(source_table)
 
-# Fetch data
-yahoo_data = {ticker: fetch_yahoo_data(ticker) for ticker in yahoo_tickers}
-# quandl_data = {f"{db}_{ds}": fetch_quandl_data(db, ds) for db, ds in quandl_datasets}
-
-# Convert Yahoo Finance data to Spark DataFrames and save as Delta tables
-for ticker, data in yahoo_data.items():
-    df = spark.createDataFrame(data.reset_index())
-    df = etl.clean_column_names(df)
-    df = etl.add_necessary_fields(df)
-    df.show()
-    # df.write.format("delta").mode("append").saveAsTable(f"yahoo_{ticker.lower()}")
-
-# Convert Quandl data to Spark DataFrames and save as Delta tables
-# for name, data in quandl_data.items():
-#     df = spark.createDataFrame(data.reset_index())
-#     df.show()
-#     # df.write.format("delta").mode("overwrite").saveAsTable(f"quandl_{name.lower()}")
+        # Convert Yahoo Finance data to Spark DataFrames and save as Delta tables
+        for ticker, data in yahoo_data.items():
+            df = spark.createDataFrame(data.reset_index())
+            df = etl.clean_column_names(df)
+            df = etl.add_necessary_fields(df)
+            df.show()
+            df.write.format("delta").mode("overwrite").saveAsTable(f"{target_schema}.{target_table}")
