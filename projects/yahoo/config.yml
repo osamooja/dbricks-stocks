@@ -1,0 +1,21 @@
+target_config_table: "yahoofina"
+source_information:
+  source_system: "yahoofina"
+object_information:
+  - source_table: "AAPL"
+    target_schema: "bronze_appl"
+    target_table: "appl"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "MSFT"
+    target_schema: "bronze_msft"
+    target_table: "msft"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "GOOGL"
+    target_schema: "bronze_googl"
+    target_table: "googl"
+    load_type: "incremental"
+    incremental_key: "date"
