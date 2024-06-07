@@ -1,4 +1,3 @@
 # Ignore IDE files
-.idea/
 .vscode/
 .databricks/

@@ -1,0 +1,14 @@
+target_config_table: "quandl"
+source_information:
+  source_system: "quandl"
+  api_key: "MvDgQDhTTE8sMYYegoz_"
+  database: "WIKI"
+object_information:
+  - source_table: "AAPL"
+    target_table: "bronze_apple"
+
+  - source_table: "MSFT"
+    target_table: "bronze_msft"
+
+  - source_table: "GOOGL"
+    target_table: "bronze_googl"
