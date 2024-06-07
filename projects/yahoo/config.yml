@@ -2,20 +2,170 @@ target_config_table: "yahoofina"
 source_information:
   source_system: "yahoofina"
 object_information:
-  - source_table: "AAPL"
-    target_schema: "bronze_appl"
-    target_table: "appl"
-    load_type: "incremental"
-    incremental_key: "date"
 
   - source_table: "MSFT"
-    target_schema: "bronze_msft"
+    target_schema: "bronze_yahoofina"
     target_table: "msft"
     load_type: "incremental"
     incremental_key: "date"
 
+  - source_table: "AAPL"
+    target_schema: "bronze_yahoofina"
+    target_table: "aapl"
+    load_type: "incremental"
+    incremental_key: "date"
+
   - source_table: "GOOGL"
-    target_schema: "bronze_googl"
+    target_schema: "bronze_yahoofina"
     target_table: "googl"
     load_type: "incremental"
     incremental_key: "date"
+
+  - source_table: "AMZN"
+    target_schema: "bronze_yahoofina"
+    target_table: "amzn"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "FB"
+    target_schema: "bronze_yahoofina"
+    target_table: "fb"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "ORCL"
+    target_schema: "bronze_yahoofina"
+    target_table: "orcl"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "ADBE"
+    target_schema: "bronze_yahoofina"
+    target_table: "adbe"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "CRM"
+    target_schema: "bronze_yahoofina"
+    target_table: "crm"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "INTU"
+    target_schema: "bronze_yahoofina"
+    target_table: "intu"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "VMW"
+    target_schema: "bronze_yahoofina"
+    target_table: "vmw"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "SAP"
+    target_schema: "bronze_yahoofina"
+    target_table: "sap"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "NOW"
+    target_schema: "bronze_yahoofina"
+    target_table: "now"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "IBM"
+    target_schema: "bronze_yahoofina"
+    target_table: "ibm"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "CSCO"
+    target_schema: "bronze_yahoofina"
+    target_table: "csco"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "DELL"
+    target_schema: "bronze_yahoofina"
+    target_table: "dell"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "WDAY"
+    target_schema: "bronze_yahoofina"
+    target_table: "wday"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "ADSK"
+    target_schema: "bronze_yahoofina"
+    target_table: "adsk"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "TWLO"
+    target_schema: "bronze_yahoofina"
+    target_table: "twlo"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "SQ"
+    target_schema: "bronze_yahoofina"
+    target_table: "sq"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "SHOP"
+    target_schema: "bronze_yahoofina"
+    target_table: "shop"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "TWTR"
+    target_schema: "bronze_twtr"
+    target_table: "twtr"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "DBX"
+    target_schema: "bronze_dbx"
+    target_table: "dbx"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "ZS"
+    target_schema: "bronze_zs"
+    target_table: "zs"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "WORK"
+    target_schema: "bronze_work"
+    target_table: "work"
+    load_type: "incremental"
+    incremental_key: "date"
+
+  - source_table: "TEAM"
+    target_schema: "bronze_team"
+    target_table: "team"
+    load_type: "incremental"
+    incremental_key: "date"
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
