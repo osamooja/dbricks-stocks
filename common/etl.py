@@ -1,8 +1,7 @@
-# Databricks notebook source
 import re
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-
+from pyspark.sql import SparkSession
 
 def clean_column_names(df) -> DataFrame :
     """
@@ -33,3 +32,16 @@ def add_necessary_fields(df) -> DataFrame:
     df = df.withColumn("load_ts", f.current_timestamp())
     
     return df
+
+def create_schema_if_not_exists(spark: SparkSession, schema_name: str) -> None:
+    """
+    Create a schema if it does not exist.
+
+    Args:
+        spark: SparkSession to use.
+        schema_name: Schema to create (if it does not exist). Use fully qualified name (e.g. "my_catalog.my_schema").
+
+    Returns:
+        None
+    """
+    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
