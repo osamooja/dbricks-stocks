@@ -2,7 +2,7 @@
 import yfinance as yf
 import pandas as pd
 from pyspark.sql.functions import col
-import common.etl as etl
+from common.etl import get_integration_configs
 from datetime import datetime, timedelta
 from pyspark.sql import SparkSession
 
