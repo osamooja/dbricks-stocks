@@ -74,7 +74,7 @@ def get_integration_configs(spark: SparkSession, source_system: str) -> DataFram
     return df
 
 
-def write_to_bronze(df: DataFrame, path: str, mode: str = "overwrite") -> None:
+def write_to_table(df: DataFrame, path: str, mode: str = "overwrite") -> None:
     """
     Write to bronze
     Args:
@@ -88,20 +88,6 @@ def write_to_bronze(df: DataFrame, path: str, mode: str = "overwrite") -> None:
 
     return None
 
-
-def write_to_silver(df: DataFrame, path: str, mode: str = "overwrite") -> None:
-    """
-    Write to bronze
-    Args:
-        DataFrame containing raw data
-        Path in bronze to save table into
-        Mode to use in df write
-    Return:
-        None
-    """
-    df.write.format("delta").mode(mode).option("mergeSchema", "true").saveAsTable(path)
-
-    return None
 
 
 

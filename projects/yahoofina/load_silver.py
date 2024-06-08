@@ -7,7 +7,7 @@ import common.etl as etl
 
 def create_silver(df, table_name):
     # Check for null values in 'close' and 'open' columns
-    # df = df.dropna(subset=['close', 'open'])
+    df = df.filter((f.col("close").isNotNull()) & (f.col("open").isNotNull()) & (f.col("close") != 0) & (f.col("open") != 0))
 
     # Calculate daily returns
     df = df.withColumn("daily_return_percentage", (f.col("close") - f.col("open")) / f.col("open") * 100)
@@ -45,8 +45,14 @@ for table in tables_in_schema.collect():
     )
 
     df = create_silver(df, table_name)
-    df.show()
-    # etl.write_to_silver(df, f"{silver_schema}.{table_name}")
+    # df.show()
+    etl.write_to_table(df, f"{silver_schema}.{table_name}")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC
+# MAGIC select * from silver_stocks.aapl where daily_return_percentage > 5
 
 # COMMAND ----------
 
