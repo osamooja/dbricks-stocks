@@ -1,6 +1,6 @@
 # Databricks notebook source
 import yfinance as yf
-from pyspark.sql.functions import col
+import pyspark.sql.functions as f
 import common.etl as etl
 from pyspark.sql import SparkSession
 
@@ -39,6 +39,7 @@ exceptions = []
 for row in configs.collect():
     source_table = row["source_table"]
     target_table = row["target_table"]
+    pk_list = row["pk_list"]
 
     try:
         # Fetch data
@@ -51,10 +52,12 @@ for row in configs.collect():
         # Convert Yahoo Finance data to Spark DataFrame
         df = spark.createDataFrame(yahoo_data.reset_index())
         df = etl.clean_column_names(df)
-        df = etl.add_necessary_fields(df)
-        df.show()
+        df = etl.add_necessary_fields(df, pk_list, source_table)
+
         # Write DataFrame to Delta table
-        # etl.write_to_bronze(df, f"{target_schema}.{target_table}")
+        # df.show() # For debugging
+        etl.write_to_bronze(df, f"{target_schema}.{target_table}")
+        print(f"Load complete on: {target_table}")
 
     except Exception as e:
         error_message = str(e)
@@ -67,4 +70,15 @@ if exceptions:
 
 # COMMAND ----------
 
+# Step 1: List all tables in the schema
+schema = "bronze_quandlfina"
 
+tables_in_schema = spark.sql(f"SHOW TABLES IN {schema}")
+display(tables_in_schema)
+
+# Step 2: Drop all tables in the schema
+for table in tables_in_schema.collect():
+    table_name = table['tableName']
+    drop_table_sql = f"DROP TABLE IF EXISTS {schema}.{table_name}"
+    print(drop_table_sql)  # Print the DROP statement for reference
+    spark.sql(drop_table_sql)

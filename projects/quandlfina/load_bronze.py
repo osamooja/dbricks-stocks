@@ -40,6 +40,8 @@ exceptions = []
 for row in configs.collect():
     source_table = row["source_table"]
     target_table = row["target_table"]
+    pk_list = row["pk_list"]
+
     try:
         # Fetch data
         quandl_data = fetch_quandl_data(source_database, source_table)
@@ -51,7 +53,7 @@ for row in configs.collect():
         # Convert Yahoo Finance data to Spark DataFrame
         df = spark.createDataFrame(quandl_data.reset_index())
         df = etl.clean_column_names(df)
-        df = etl.add_necessary_fields(df)
+        df = etl.add_necessary_fields(df, pk_list, source_table)
 
         # Write DataFrame to Delta table
         etl.write_to_bronze(df, f"{target_schema}.{target_table}")
