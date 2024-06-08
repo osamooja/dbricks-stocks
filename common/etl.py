@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 from datetime import datetime, timezone
 
 
-def clean_column_names(df) -> DataFrame :
+def clean_column_names(df) -> DataFrame:
     """
     Removes or replaces invalid characters from column names of a Spark DataFrame and converts them to lowercase.
     Invalid characters are spaces, commas, semicolons, curly braces, parentheses, tabs, and equals signs.
@@ -30,8 +30,11 @@ def clean_column_names(df) -> DataFrame :
 
     return df
 
-def add_necessary_fields(df) -> DataFrame:
-    df = df.withColumn("load_ts", f.current_timestamp())
+
+def add_necessary_fields(df, pk_list, table_name) -> DataFrame:
+    df = df.withColumn("source_table", f.lit(table_name))
+    df = df.withColumn("lakehouse_load_ts", f.current_timestamp())
+    df = df.withColumn("lakehouse_pk", f.concat_ws('_', *pk_list))
     
     return df
 
@@ -62,10 +65,12 @@ def get_integration_configs(spark: SparkSession, source_system: str) -> DataFram
     """
     df = spark.sql(
         f"""
-        select *
+        select  *,
+                split(primary_key, ', ') as pk_list
         from integration_configs.{source_system}
         """
     )
+    df = df.drop("primary_key")
     return df
 
 
@@ -84,7 +89,19 @@ def write_to_bronze(df: DataFrame, path: str, mode: str = "overwrite") -> None:
     return None
 
 
+def write_to_silver(df: DataFrame, path: str, mode: str = "overwrite") -> None:
+    """
+    Write to bronze
+    Args:
+        DataFrame containing raw data
+        Path in bronze to save table into
+        Mode to use in df write
+    Return:
+        None
+    """
+    df.write.format("delta").mode(mode).option("mergeSchema", "true").saveAsTable(path)
 
+    return None
 
 
 
