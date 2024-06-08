@@ -56,7 +56,7 @@ for row in configs.collect():
 
         # Write DataFrame to Delta table
         # df.show() # For debugging
-        etl.write_to_bronze(df, f"{target_schema}.{target_table}")
+        etl.write_to_table(df, f"{target_schema}.{target_table}")
         print(f"Load complete on: {target_table}")
 
     except Exception as e:

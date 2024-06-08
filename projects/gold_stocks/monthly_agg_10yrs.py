@@ -13,7 +13,7 @@ spark = SparkSession.builder.appName("GoldLayerCreation").getOrCreate()
 def create_gold_layer(df):
     # Get current year and calculate the year for filtering
     current_year = datetime.datetime.now().year
-    start_year = current_year - 5
+    start_year = current_year - 10
 
     # Filter for the last 5 years
     df = df.filter(f.year("date") >= start_year)
@@ -37,12 +37,12 @@ def create_gold_layer(df):
 # COMMAND ----------
 
 # Combine all silver tables into one DataFrame
-silver_schema = "silver_yahoofina"
+silver_schema = "silver_stocks"
 gold_schema = "gold_stocks"
 
 tables_in_silver_schema = spark.sql(f"show tables in {silver_schema}")
 
-etl.create_schema_if_not_exists(spark, silver_schema)
+etl.create_schema_if_not_exists(spark, gold_schema)
 
 combined_df = None
 for table in tables_in_silver_schema.collect():
@@ -60,9 +60,9 @@ for table in tables_in_silver_schema.collect():
 
 # Create gold layer DataFrame
 df = create_gold_layer(combined_df)
-display(df)
-# Write the gold layer DataFrame to the gold schema
-gold_table_name = "aggregated_stock_data"
-# gold_df.write.mode("overwrite").saveAsTable(f"{gold_schema}.{gold_table_name}")
 
-print("Gold layer creation completed successfully.")
+# Write the gold layer DataFrame to the gold schema
+gold_table_name = "monthly_agg_10yrs"
+etl.write_to_table(df, f"{gold_schema}.{gold_table_name}")
+
+print("Gold table for monthly history created successfully.")
