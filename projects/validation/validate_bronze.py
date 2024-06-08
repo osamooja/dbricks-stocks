@@ -1,19 +1,6 @@
 # Databricks notebook source
 from pyspark.sql import functions as f
 
-def validate_bronze_tables(bronze_schema):
-    # List all tables in the bronze schema
-    tables_in_bronze = spark.sql(f"SHOW TABLES IN {bronze_schema}")
-
-    validation_results = []
-
-    # Iterate through each table
-    for table_row in tables_in_bronze.collect():
-        table_name = table_row['tableName']
-        table_validation_result = validate_bronze_table(f"{bronze_schema}.{table_name}")
-        validation_results.append((table_name, table_validation_result))
-
-    return validation_results
 
 def validate_bronze_tables(bronze_schema):
     # List all tables in the bronze schema
@@ -68,23 +55,15 @@ try:
         # Check if any table failed validation
         failed_tables = [(table_name, validation_result) for table_name, validation_result in all_validation_results if not validation_result]
         if failed_tables:
-            print("Validation failed for the following tables:")
-            for table_name, validation_result in failed_tables:
-                print(f"Table: {schema}.{table_name}, Validation Result: {validation_result}")  # Print failed tables and their validation results
+            raise ValueError("Validation failed for one or more tables.")
         else:
             print("Validation passed for all tables. No null or zero values found.")
 
 except ValueError as e:
-    print("Validation failed:", e)
+    print(e)
     # Exit with a non-zero status code to indicate failure
-    exit(1)
+    raise RuntimeError("Validation failed, check job log for results.") from e
 
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC
-# MAGIC select * from bronze_yahoofina.aapl where volume = 0
 
 # COMMAND ----------
 
