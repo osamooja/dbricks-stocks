@@ -40,7 +40,16 @@ combined_df = None
 for table in tables_in_silver_schema.collect():
     table_name = table['tableName']
     df = spark.sql(f"""
-                   select source_table as stock_name, *
+                   select   source_table as stock_name
+                            , date
+                            , open
+                            , high
+                            , low
+                            , close
+                            , volume
+                            , percentage_change_1d
+                            , 7_day_moving_avg
+                            , 30_day_volatility
                    from {silver_schema}.{table_name}
                    """
     )
@@ -53,7 +62,7 @@ df = combined_df
 
 df = price_movement_in_timeframe(df)
 
-df = df.select("stock_name", "date", "open", "close", "percentage_change_1d", "prev_close_10d", "price_change_10d", "percentage_change_10d", "prev_close_30d", "price_change_30d", "percentage_change_30d")
+df = df.withColumn("last_updated_UTC", f.current_timestamp())
 
 # Write the aggregated DataFrame to the gold schema
 gold_table_name = "price_movement_by_timeframe"
