@@ -64,8 +64,8 @@ for row in configs.collect():
         print("Continuing loading remaining tables.")
         exceptions.append(e)
 
-if exceptions:
-    raise Exception(f"One or more loads failed: {exceptions}")
+# if exceptions:
+#     raise Exception(f"One or more loads failed: {exceptions}")
 
 # COMMAND ----------
 

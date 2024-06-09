@@ -26,34 +26,42 @@ def create_silver(df, table_name):
 
 # COMMAND ----------
 
-# Step 1: List all tables in the schema
-bronze_schema = "bronze_yahoofina"
+bronze_schemas = ["bronze_yahoofina", "bronze_quandlfina"]
 silver_schema = "silver_stocks"
 
-tables_in_schema = spark.sql(f"SHOW TABLES IN {bronze_schema}")
+# Function to list tables in a schema
+def list_tables(schema_name):
+    return spark.sql(f"show tables in {schema_name}")
 
+# List tables in bronze schemas
+tables_in_bronze = []
+for schema in bronze_schemas:
+    tables_in_bronze.extend(list_tables(schema).collect())
+
+# Ensure the silver schema exists
 etl.create_schema_if_not_exists(spark, silver_schema)
 
-# Step 2: aggregate
-for table in tables_in_schema.collect():
+# Step 2: Aggregate
+for table in tables_in_bronze:
     table_name = table['tableName']
+    schema_name = table['database']
 
     df = spark.sql(f"""
-                   select * from {bronze_schema}.{table_name}
+                   select *
+                   from {schema_name}.{table_name}
                    qualify row_number() over (partition by lakehouse_pk order by lakehouse_load_ts desc) = 1
                    """
     )
 
     df = create_silver(df, table_name)
-    # df.show()
-    etl.write_to_table(df, f"{silver_schema}.{table_name}")
 
-# COMMAND ----------
+    if schema_name == "bronze_yahoofina":
+        target_path = f"{silver_schema}.yahoofina_{table_name}"
+    elif schema_name == "bronze_quandlfina":
+        target_path = f"{silver_schema}.quandlfina_{table_name}"
+    else:
+        print(f"Unkown schema_name: {schema_name}")
 
-# MAGIC %sql
-# MAGIC
-# MAGIC select * from silver_stocks.aapl where percentage_change_1d > 5
+    etl.write_to_table(df, target_path)
 
-# COMMAND ----------
-
-
+print("Silver created succesfully")
