@@ -6,9 +6,9 @@ object_information:
 
   - source_table: "MSFT"
     target_table: "msft"
+    primary_key: "source_table, date"
     load_type: "incremental"
     incremental_key: "date"
-    primary_key: "source_table, date"
 
   - source_table: "AAPL"
     target_table: "aapl"

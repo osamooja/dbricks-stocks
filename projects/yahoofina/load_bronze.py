@@ -53,9 +53,8 @@ for row in configs.collect():
         df = spark.createDataFrame(yahoo_data.reset_index())
         df = etl.clean_column_names(df)
         df = etl.add_necessary_fields(df, pk_list, source_table)
-
         # Write DataFrame to Delta table
-        # df.show() # For debugging
+        # display(df) # For debugging
         etl.write_to_table(df, f"{target_schema}.{target_table}")
         print(f"Load complete on: {target_table}")
 
@@ -67,7 +66,3 @@ for row in configs.collect():
 
 if exceptions:
     raise Exception(f"One or more loads failed: {exceptions}")
-
-# COMMAND ----------
-
-

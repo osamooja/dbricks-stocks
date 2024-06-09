@@ -10,8 +10,8 @@ def create_silver(df, table_name):
     df = df.filter((f.col("close").isNotNull()) & (f.col("open").isNotNull()) & (f.col("close") != 0) & (f.col("open") != 0))
 
     # Calculate daily returns
-    df = df.withColumn("daily_return_percentage", (f.col("close") - f.col("open")) / f.col("open") * 100)
-    df = df.withColumn("daily_return_percentage", f.round(f.col("daily_return_percentage"), 2))
+    df = df.withColumn("percentage_change_1d", (f.col("close") - f.col("open")) / f.col("open") * 100)
+    df = df.withColumn("percentage_change_1d", f.round(f.col("percentage_change_1d"), 2))
 
     # Calculate moving average
     window_spec = Window.orderBy("date").rowsBetween(-6, 0)
@@ -19,7 +19,7 @@ def create_silver(df, table_name):
 
     # Calculate volatility (std dev of returns over the past 30 days)
     window_spec_30 = Window.orderBy("date").rowsBetween(-29, 0)
-    df = df.withColumn("30_day_volatility", f.stddev(f.col("daily_return_percentage")).over(window_spec_30))
+    df = df.withColumn("30_day_volatility", f.stddev(f.col("percentage_change_1d")).over(window_spec_30))
     return df
 
 
@@ -52,7 +52,7 @@ for table in tables_in_schema.collect():
 
 # MAGIC %sql
 # MAGIC
-# MAGIC select * from silver_stocks.aapl where daily_return_percentage > 5
+# MAGIC select * from silver_stocks.aapl where percentage_change_1d > 5
 
 # COMMAND ----------
 
