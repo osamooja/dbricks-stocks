@@ -2,27 +2,28 @@
 from pyspark.sql import functions as f
 from pyspark.sql.window import Window
 import common.etl as etl
-from datetime import datetime, timedelta
-import pandas as pd
 
+# COMMAND ----------
 
-# Define the timeframes in terms of days
-timeframes = [1, 10, 30]
+timeframes = [10, 30]
 
-def create_price_movements(df):
+def price_movement_in_timeframe(df):
     for timeframe in timeframes:
-        # Define the window spec for the rolling calculation
-        window_spec = Window.partitionBy("stock_name").orderBy("date").rowsBetween(-timeframe, 0)
-        
-        # Calculate price movement for each timeframe
-        first_close = f.first(df["close"]).over(window_spec)
-        last_close = f.last(df["close"]).over(window_spec)
-        
-        price_movement = ((last_close - first_close) / first_close) * 100
-        df = df.withColumn(f"price_movement_{timeframe}d", price_movement)
-    
-    return df
+        # Calculate price change over a 30-day period
+        windowSpec = Window.partitionBy("stock_name").orderBy(f.col("date").desc())
+        df = df.withColumn(f"prev_close_{timeframe}d", f.lag("close", -timeframe).over(windowSpec))
 
+        # Filter out rows with null values in prev_close_30
+        df = df.filter(f.col(f"prev_close_{timeframe}d").isNotNull())
+
+        # Calculate price_change_30 and percentage_change_30
+        df = df.withColumn(f"price_change_{timeframe}d", f.col("close") - f.col(f"prev_close_{timeframe}d"))
+        df = df.withColumn(f"percentage_change_{timeframe}d", (f.col(f"price_change_{timeframe}d") / f.col(f"prev_close_{timeframe}d")) * 100)
+        df = df.withColumn(f"percentage_change_{timeframe}d", f.round(f.col(f"percentage_change_{timeframe}d"), 2))
+
+        # Filter to keep only the last record for each stock
+    df = df.withColumn("rank", f.row_number().over(windowSpec)).filter(f.col("rank") == 1).drop("rank")
+    return df
 
 # COMMAND ----------
 
@@ -48,41 +49,14 @@ for table in tables_in_silver_schema.collect():
         combined_df = df
     else:
         combined_df = combined_df.union(df)
+df = combined_df
 
-# Convert date column to date format
-df = combined_df.withColumn("date", f.to_date("date"))
-today = datetime.today()
-one_day_ago = today - timedelta(days=1)
-ten_days_ago = today - timedelta(days=10)
-thirty_days_ago = today - timedelta(days=30)
+df = price_movement_in_timeframe(df)
 
-# Filter DataFrame
-one_day_data = df.filter(f.col("date") == one_day_ago)
-display(one_day_data)
-ten_days_data = df.filter(f.col("date") >= ten_days_ago)
-display(ten_days_data)
-thirty_days_data = df.filter(f.col("date") >= thirty_days_ago)
-display(thirty_days_data)
-# Create DataFrame with price movements
-# df = create_price_movements(combined_df)
-
-# Aggregate data to stock level
-# df = df.groupBy("stock_name").agg(
-#     f.round(f.avg("price_movement_1d"), 2).alias("avg_price_movement_1d"),
-#     f.round(f.avg("price_movement_10d"), 2).alias("avg_price_movement_10d"),
-#     f.round(f.avg("price_movement_30d"), 2).alias("avg_price_movement_30d"),
-#     f.round(f.last("price_movement_1d"), 2).alias("last_price_movement_1d"),
-#     f.round(f.last("price_movement_10d"), 2).alias("last_price_movement_10d"),
-#     f.round(f.last("price_movement_30d"), 2).alias("last_price_movement_30d")
-# )
+df = df.select("stock_name", "date", "open", "close", "percentage_change_1d", "prev_close_10d", "price_change_10d", "percentage_change_10d", "prev_close_30d", "price_change_30d", "percentage_change_30d")
 
 # Write the aggregated DataFrame to the gold schema
 gold_table_name = "price_movement_by_timeframe"
-# display(df)
-# etl.write_to_table(df, f"{gold_schema}.{gold_table_name}")
+etl.write_to_table(df, f"{gold_schema}.{gold_table_name}")
 
 print("Gold table for price movement created successfully.")
-
-# COMMAND ----------
-
-

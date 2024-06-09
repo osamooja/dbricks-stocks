@@ -84,7 +84,7 @@ def write_to_table(df: DataFrame, path: str, mode: str = "overwrite") -> None:
     Return:
         None
     """
-    df.write.format("delta").mode(mode).option("mergeSchema", "true").saveAsTable(path)
+    df.write.format("delta").mode(mode).option("overwriteSchema", "true").saveAsTable(path)
 
     return None
 
