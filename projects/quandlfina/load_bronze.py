@@ -66,18 +66,3 @@ for row in configs.collect():
 
 # if exceptions:
 #     raise Exception(f"One or more loads failed: {exceptions}")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC
-# MAGIC with x as(
-# MAGIC select source_table, count(source_table) as cnt from integration_configs.yahoofina
-# MAGIC group by source_table
-# MAGIC )
-# MAGIC select * from x order by cnt desc
-# MAGIC
-
-# COMMAND ----------
-
-

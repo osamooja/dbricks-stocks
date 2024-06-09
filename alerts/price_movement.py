@@ -43,7 +43,3 @@ for row in alerts_list:
     print(f"Stock: {stock_name}, Triggered Thresholds: {', '.join(triggered_thresholds)}")
 
 display(alerts_df)
-
-# COMMAND ----------
-
-
