@@ -17,14 +17,6 @@ def fetch_quandl_data(database_code, dataset_code):
         time.sleep(600)
     return fetch_quandl_data(database_code, dataset_code)
 
-
-
-# Convert Quandl data to Spark DataFrames and save as Delta tables
-# for name, data in quandl_data.items():
-#     df = spark.createDataFrame(data.reset_index())
-#     df.show()
-#     # df.write.format("delta").mode("overwrite").saveAsTable(f"quandl_{name.lower()}")
-
 # COMMAND ----------
 
 # Load integration configurations
