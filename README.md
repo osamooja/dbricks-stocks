@@ -7,7 +7,7 @@
 Each integration operates through its dedicated job, responsible for ingesting data from the source into the Bronze Layer (`bronze_{source_system}` schema).
 
 Bronze Layer:
-- During this process, lakehouse_ fields (`lakehouse_pk` & `lakehouse_load_ts`) are incorporated.
+- During this process, lakehouse_ fields (`lakehouse_pk` & `lakehouse_load_ts`) are added.
 
 Silver Layer:
 - The Silver Layer consolidates tables from each source under the `silver_stocks` schema. This phase involves cleaning, filtering, and applying minor aggregates to the data.
@@ -20,13 +20,13 @@ Job Management:
 - Jobs are managed within Databricks Workflows, with each integration configured as its dedicated job.
 
 Source Code:
-- The source code for jobs is sourced from Github, defined by a Tag, typically created upon release (e.g., `v1.1.0`).
+- The source code for jobs is sourced from Github, defined by a Tag, created upon release (e.g., `v1.1.0`).
 
 Integration Configuration:
-- Integration configurations are located in the `project/{integration_name}/` folder's config.yml. This file is then written to the `integration_configs.{integration_name}` schema, which is utilized within the integration process.
+- Integration configurations are located in the `project/{integration_name}/` folder's `config.yml`. This file is then written to the `integration_configs.{integration_name}` schema, which is used in the integration process.
 
-Silver and Gold Layer Execution:
-- The Silver and Gold Layers are executed within the same job, segregated by tasks.
+Silver and Gold Layer:
+- The Silver and Gold Layers are executed within the same job, separated by tasks.
 
 Alert Mechanism:
 - Each alert, whether for Bronze validation or price movement, operates within its dedicated job.
